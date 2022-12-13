@@ -1,0 +1,433 @@
+/*
+ecpg ex.txt
+cc -I/usr/include/postgresql -c ex.c
+cc -o ex ex.o -L/usr/lib/x86_64-linux-gnu -lecpg,
+��� -L/usr/lib/x86_64-linux-gnu ���� ��� ����� libecpg.so
+-I/usr/include/postgresql ���� ��� ����� ecpgtype.h, ecpglib.h, ecpgerrno.h, sqlca.h.
+*/
+/*
+#include "C:/Program Files/PostgreSQL/15/include/ecpglib.h"
+#include "C:/Program Files/PostgreSQL/15/include/ecpgerrno.h"
+#include "C:/Program Files/PostgreSQL/15/include/sqlca.h"
+*/
+
+#include <stdio.h>
+#include <string.h>
+#include <iostream>
+#include <string>
+
+EXEC SQL include sqlca;
+
+/*
+create table exTab(
+id int primary key,
+name varchar,
+date1 timestamp,
+date2 timestamp
+);
+*/
+
+//#pragma comment(lib, "libecpg.lib")
+         /*
+                EXEC SQL BEGIN DECLARE SECTION;
+                EXEC SQL END DECLARE SECTION; - ���� ���������� ��� ���������� ����������,
+                ������� ����� ����������������� � ������� �� �������.
+                ������ ���� ���������� ������������ ������� �-��������� ���������� �
+                            ������������� ����������
+            */
+
+        //��� ���������� � ��
+        EXEC SQL BEGIN DECLARE SECTION; 
+        char ConnectionString [] = "public transport@127.0.0.1:5432";
+        char Login [] = "postgres";
+        char Password [] = "20012001a";
+        EXEC SQL END DECLARE SECTION;
+
+        //��� �������������� � ��
+        EXEC SQL BEGIN DECLARE SECTION;
+                int my_id;
+                char my_data[256];
+                int my_count;
+                char date1[10];
+                 char date2[10];
+                 int addr;
+                 char title[64];
+                 int type_st;
+                 
+              EXEC SQL END DECLARE SECTION;	
+
+        /*
+                ����������, ����������� ������������ ������.
+        */
+        //void f_error(void);
+        //EXEC SQL WHENEVER SQLERROR CALL f_error;	
+        EXEC SQL WHENEVER SQLERROR SQLPRINT;			
+        /*
+            ����� ���������: 
+            EXEC SQL WHENEVER condition action;
+                condition - ��� ������, ������� ����� �������������.
+                action - ��������, ������� ����� �������������� ��� ������������� ������
+                ��������� �������� condition:
+                                 SQLERROR - ������ ��� ��������� ����������
+                                 SQLWARNING -  �������������� ��� ��������� ����������
+                                 NOT FOUND - ������� ������� ������ ������
+              ��������� �������� action:   
+                                 CONTINUE - ����������� ������ ����������	
+                                 GOTO label - ������� �� �����
+                                 SQLPRINT - ������ ������ � ����������� ����� ������
+                                 STOP - ���������� exit(1) � �
+                                 DO BREAK - ���������� break � �. ������������ ������ � switch
+                                            ��� � �����.
+                                 CALL name (args) - ����� ������� name � ����������� args 
+                                 DO name (args)   - ����� ������� name � ����������� args 
+
+        */
+int menu();
+int main() {
+
+        EXEC SQL CONNECT TO :ConnectionString  USER :Login using :Password;
+
+                /*
+                   ���������� sqlca - ���������. ���� sqlcode - ����� ������������ ��� 
+                   ��������� ������. 
+                   sqlstate - ���������� �� 5 ��������. ���� ������ ��� 00, �� �� ���������
+                */
+
+        if( sqlca.sqlcode != 0 || strncmp(sqlca.sqlstate,"00",2))
+        {
+                printf("connect -- NoOK\n");
+               // exit(-1);
+               return 0;
+        }
+        else
+        {
+                printf("connect --OK\n");	
+                menu();
+        }	
+        exec sql disconnect;
+        printf("disconnect --OK\n");
+}
+
+
+
+int Dynamic_sql_insert()
+{
+EXEC SQL BEGIN DECLARE SECTION; 
+       
+char stmt[]="INSERT INTO exTab(id,name) VALUES(?, ?);"; 
+        EXEC SQL END DECLARE SECTION;
+
+       EXEC SQL SELECT count(*) INTO :my_count FROM exTab;
+        if(my_count==0)
+        {	
+                my_id=1;
+        }
+        else
+        {
+                EXEC SQL SELECT max(id) INTO :my_id FROM exTab;
+                my_id=my_id+1;
+        }
+
+     
+
+       EXEC SQL PREPARE mystmt FROM :stmt;
+ 
+       EXEC SQL EXECUTE mystmt USING :my_id, '123';
+       EXEC SQL COMMIT;
+        return 0;
+}
+
+int Dynamic_sql_select_1()
+{
+     EXEC SQL BEGIN DECLARE SECTION;           
+          char *stmt = "SELECT name "
+             "  FROM exTab "
+             "  WHERE id=?";     
+     EXEC SQL END DECLARE SECTION;
+
+
+
+     EXEC SQL PREPARE sqlstmt FROM :stmt;
+     
+
+    printf("select 'id' >");
+        scanf("%d", &my_id);
+
+    EXEC SQL EXECUTE sqlstmt INTO :my_data USING :my_id;
+    printf("name=%s\n", my_data);	
+
+
+
+    EXEC SQL COMMIT;
+    return 0;
+}
+
+
+int Dynamic_sql_select_2()
+{
+     EXEC SQL BEGIN DECLARE SECTION;           
+          char *stmt = "SELECT name "
+             "  FROM exTab "
+             "  WHERE id>=? and id<=?";
+     int id_min;
+     int id_max;
+     EXEC SQL END DECLARE SECTION;
+
+
+
+     EXEC SQL PREPARE sqlstmt FROM :stmt;
+
+     EXEC SQL DECLARE my_cursor CURSOR FOR sqlstmt ;
+
+printf("select 'id_min' >");
+        scanf("%d", &id_min);
+
+printf("select 'id_max' >");
+        scanf("%d", &id_max);
+
+     EXEC SQL OPEN my_cursor USING :id_min,:id_max;
+
+
+
+     while (1)
+     {
+        EXEC SQL FETCH my_cursor INTO :my_data;    
+        if (sqlca.sqlcode == ECPG_NOT_FOUND || strncmp(sqlca.sqlstate,"00",2)) break;
+        printf("name=%s\n", my_data);	
+     }
+
+    EXEC SQL CLOSE my_cursor;
+
+    EXEC SQL COMMIT;
+    return 0;
+}
+
+int InsertValues()
+{		
+        /*
+                ��������� id
+        */
+        EXEC SQL SELECT count(*) INTO :my_count FROM t_stop;
+        if(my_count==0)
+        {	
+                my_id=1;
+        }
+        else
+        {
+                EXEC SQL SELECT max(id) INTO :my_id FROM t_stop;
+                my_id=my_id+1;
+        }
+        
+        
+        
+        std::cout << "enter new 'address_id' >"; 
+        std::cin >> addr;
+        std::cout << "enter new 'title' >";
+        std::cin >> title;
+        std::cout << "enter new 'stantion type' >"; 
+        std::cin >> type_st;
+
+        //printf("enter new 'data' >");
+        
+        //scanf("%c", my_data);
+         
+        // my_data[0]='\0';
+        //scanf("%[ a-zA-Z0-9+,�-��-�/-.]",my_data);
+        
+
+        //printf("enter new 'date1' >");
+       
+        //scanf("%c", date1);
+      
+        //    date1[0]='\0';
+        //scanf("%[ a-zA-Z0-9+,�-��-�/-.]",date1);
+
+        //printf("enter new 'date2' >");
+        //scanf("%c", date2);
+        
+        //    date2[0]='\0';
+        //scanf("%[ a-zA-Z0-9+,�-��-�/-.]",date2);
+        
+        
+        
+        EXEC SQL INSERT INTO t_stop( address_id , title , type_station) VALUES(:addr, :title, :type_st);
+
+        EXEC SQL COMMIT;
+        return 0;
+}
+
+
+
+int ReadAllRecord()
+{
+        /*
+                ���������� �������.
+                ����� ���������: EXEC SQL DECLARE <cursor_name> CURSOR FOR <sql_statement>;
+        */
+        EXEC SQL DECLARE MyCursor CURSOR FOR
+                SELECT id,COALESCE(name,''),COALESCE(CAST(date1 as varchar),''),COALESCE(CAST(date2 as varchar),'') FROM exTab ORDER BY id;
+        /*
+            �������� �������.
+            ����� ���������: EXEC SQL OPEN <cursor_name>;
+        */
+        EXEC SQL OPEN MyCursor;
+        while(1)
+        {
+            /*
+                        ������ �� �������.
+                        ����� ���������: EXEC SQL FETCH <cursor_name> INTO <var_list>;,
+                                   ��� <var_list> - ������ ����������	
+            */
+                EXEC SQL FETCH MyCursor INTO :my_id, :my_data, :date1, :date2;
+
+                /*'ECPG_NOT_FOUND' - ������� ��������� ������
+               ������. */
+                if (sqlca.sqlcode == ECPG_NOT_FOUND || strncmp(sqlca.sqlstate,"00",2)) break;		
+                printf("\t %d \t %s \t %s \t %s\n", my_id, my_data, date1, date2);
+        }
+        /*
+                �������� �������.
+                ����� ���������: EXEC SQL CLOSE <cursor_name>;
+        */
+        EXEC SQL CLOSE MyCursor;
+        EXEC SQL COMMIT;
+        return 0;
+}
+
+
+
+
+
+
+
+int SelectValues()
+{		
+        printf("select 'id' >");
+        scanf("%d", &my_id);
+        /*
+                ��������� ������ �� ������� � ���������� my_id, my_data
+        */
+        EXEC SQL SELECT id, name INTO :my_id, :my_data FROM exTab WHERE id = :my_id;
+        printf("id: %d, data: %s \n", my_id, my_data);
+        return 0;
+}
+int UpdateValues()
+{	
+        printf("select updatable 'id' >");
+        scanf("%d", &my_id);
+        printf("enter new  'data' >");
+        scanf("%s", my_data);
+
+        /*
+                ���������� ������ data � ������� 
+        */
+        EXEC SQL UPDATE exTab SET name = :my_data WHERE id = :my_id;	
+
+        EXEC SQL COMMIT;
+        return 0;
+}
+int DeleteValues()
+{
+        printf("select deleted 'id' >");
+        scanf("%d", &my_id);
+
+        /*
+                �������� ������ �� �������
+        */
+        EXEC SQL DELETE FROM exTab WHERE id = :my_id;
+        /*
+                ��������� ����������, �.� ������� ������ �� ����
+        */
+        EXEC SQL COMMIT;
+}
+
+int menu()
+{
+        char sitem[512];
+        while(1)
+        {
+            printf("1. show\n");
+            printf("2. select values\n");
+            printf("3. update values\n");
+            printf("4. insert values\n");
+            printf("5. delete values\n");
+            printf("6. Dynamic sql insert\n");
+            printf("7. Dynamic sql select one\n");
+            printf("8. Dynamic sql select more than one\n");
+            printf("9. quit\n");
+            printf("choose menu item > ");
+            if(scanf("%s", &sitem)!=1) break;
+         
+if (strlen(sitem)>1) continue;   
+           
+                switch(sitem[0])
+                {
+                        case '1':
+                        {
+                                printf("_____________________\n");
+                                printf("1. show\n");
+                                ReadAllRecord();
+                                printf("_____________________\n");
+                                break;
+                        }
+                        case '2':
+                        {
+                                printf("_____________________\n");
+                                printf("2. select values\n");
+                                SelectValues();
+                                printf("_____________________\n");
+                                break;
+                        }
+                        case '3':
+                        {
+                                printf("_____________________\n");
+                                printf("3. update values\n");
+                                UpdateValues();
+                                printf("_____________________\n");
+                                break;
+                        }
+                        case '4':
+                        {
+                                printf("_____________________\n");
+                                printf("4. insert values\n");	
+                                InsertValues();
+                                printf("_____________________\n");
+                                break;
+                        }
+                        case '5':
+                        {
+                                printf("_____________________\n");
+                                printf("5. delete values\n");
+                                DeleteValues();
+                                printf("_____________________\n");
+                                break;
+                        }
+                        case '6':
+                        {
+                               Dynamic_sql_insert();
+                               break;
+                        }
+                        case '7':
+                        {
+                               Dynamic_sql_select_1();
+                               break;
+                        }
+                         case '8':
+                        {
+                               Dynamic_sql_select_2();
+                               break;
+                        }
+                        case '9':
+                        {
+                                return 0;
+                        }
+                        default: break;
+                }
+        }
+        return 0;
+}
+
+/*void f_error(void)
+{
+   printf("\n% .70s \n", sqlca.sqlerrm.sqlerrmc);
+}*/

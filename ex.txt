@@ -250,8 +250,6 @@ int SelectValues()
 {		
         std::cout << "select 'address_id' >";
         std::cin >> addr;
-        //printf("select 'id' >");
-        //scanf("%d", &my_id);
         
         EXEC SQL SELECT address_id, title, type_station INTO :addr, :title, :type_st FROM t_stop WHERE address_id = :addr;
         std::cout << addr << " " << title << " " << type_st << std::endl;
@@ -260,19 +258,20 @@ int SelectValues()
 
 int UpdateValues()
 {	
-        printf("select updatable 'id' >");
-        scanf("%d", &my_id);
-        printf("enter new  'data' >");
-        scanf("%s", my_data);
 
-        /*
-                ���������� ������ data � ������� 
-        */
-        EXEC SQL UPDATE exTab SET name = :my_data WHERE id = :my_id;	
+        std::cout << "select updatable 'address_id' >";
+        std::cin >> addr;
+        std::cout << "enter new 'title' >";
+        std::cin >> title;
+        std::cout << "enter new 'type_station' >";
+        std::cin >> type_st;
+         
+        EXEC SQL UPDATE t_stop SET title = :title, type_station = :type_st WHERE address_id = :addr;	
 
         EXEC SQL COMMIT;
         return 0;
 }
+
 int DeleteValues()
 {
         printf("select deleted 'id' >");

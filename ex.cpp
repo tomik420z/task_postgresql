@@ -1,5 +1,5 @@
 /* Processed by ecpg (15.0) */
-/* These include f
+/* These include files are added by the preprocessor */
 /* End of automatic include section */
 
 #line 1 "ex.txt"
@@ -535,10 +535,10 @@ int SelectValues()
 	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, 
 	ECPGt_int,&(type_st),(long)1,(long)1,sizeof(int), 
 	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, ECPGt_EORT);
-#line 256 "ex.txt"
+#line 254 "ex.txt"
 
 if (sqlca.sqlcode < 0) sqlprint();}
-#line 256 "ex.txt"
+#line 254 "ex.txt"
 
         std::cout << addr << " " << title << " " << type_st << std::endl;
         return 0;
@@ -546,33 +546,36 @@ if (sqlca.sqlcode < 0) sqlprint();}
 
 int UpdateValues()
 {	
-        printf("select updatable 'id' >");
-        scanf("%d", &my_id);
-        printf("enter new  'data' >");
-        scanf("%s", my_data);
 
-        /*
-                ���������� ������ data � ������� 
-        */
-        { ECPGdo(__LINE__, 0, 1, NULL, 0, ECPGst_normal, "update exTab set name = $1  where id = $2 ", 
-	ECPGt_char,(my_data),(long)256,(long)1,(256)*sizeof(char), 
+        std::cout << "select updatable 'address_id' >";
+        std::cin >> addr;
+        std::cout << "enter new 'title' >";
+        std::cin >> title;
+        std::cout << "enter new 'type_station' >";
+        std::cin >> type_st;
+         
+        { ECPGdo(__LINE__, 0, 1, NULL, 0, ECPGst_normal, "update t_stop set title = $1  , type_station = $2  where address_id = $3 ", 
+	ECPGt_char,(title),(long)64,(long)1,(64)*sizeof(char), 
 	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, 
-	ECPGt_int,&(my_id),(long)1,(long)1,sizeof(int), 
+	ECPGt_int,&(type_st),(long)1,(long)1,sizeof(int), 
+	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, 
+	ECPGt_int,&(addr),(long)1,(long)1,sizeof(int), 
 	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, ECPGt_EOIT, ECPGt_EORT);
-#line 271 "ex.txt"
+#line 269 "ex.txt"
 
 if (sqlca.sqlcode < 0) sqlprint();}
-#line 271 "ex.txt"
+#line 269 "ex.txt"
 	
 
         { ECPGtrans(__LINE__, NULL, "commit");
-#line 273 "ex.txt"
+#line 271 "ex.txt"
 
 if (sqlca.sqlcode < 0) sqlprint();}
-#line 273 "ex.txt"
+#line 271 "ex.txt"
 
         return 0;
 }
+
 int DeleteValues()
 {
         printf("select deleted 'id' >");
@@ -584,19 +587,19 @@ int DeleteValues()
         { ECPGdo(__LINE__, 0, 1, NULL, 0, ECPGst_normal, "delete from exTab where id = $1 ", 
 	ECPGt_int,&(my_id),(long)1,(long)1,sizeof(int), 
 	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, ECPGt_EOIT, ECPGt_EORT);
-#line 284 "ex.txt"
+#line 283 "ex.txt"
 
 if (sqlca.sqlcode < 0) sqlprint();}
-#line 284 "ex.txt"
+#line 283 "ex.txt"
 
         /*
                 ��������� ����������, �.� ������� ������ �� ����
         */
         { ECPGtrans(__LINE__, NULL, "commit");
-#line 288 "ex.txt"
+#line 287 "ex.txt"
 
 if (sqlca.sqlcode < 0) sqlprint();}
-#line 288 "ex.txt"
+#line 287 "ex.txt"
 
 }
 

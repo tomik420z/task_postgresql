@@ -260,17 +260,10 @@ int InsertValues()
 
 int ReadAllRecord()
 {
-        /*
-                ���������� �������.
-                ����� ���������: EXEC SQL DECLARE <cursor_name> CURSOR FOR <sql_statement>;
-        */
         EXEC SQL DECLARE MyCursor CURSOR FOR
-                SELECT id,COALESCE(name,''),COALESCE(CAST(date1 as varchar),''),COALESCE(CAST(date2 as varchar),'') FROM exTab ORDER BY id;
-        /*
-            �������� �������.
-            ����� ���������: EXEC SQL OPEN <cursor_name>;
-        */
+                SELECT address_id, title, type_station FROM t_stop ORDER BY address_id;
         EXEC SQL OPEN MyCursor;
+    
         while(1)
         {
             /*
@@ -278,12 +271,13 @@ int ReadAllRecord()
                         ����� ���������: EXEC SQL FETCH <cursor_name> INTO <var_list>;,
                                    ��� <var_list> - ������ ����������	
             */
-                EXEC SQL FETCH MyCursor INTO :my_id, :my_data, :date1, :date2;
+                EXEC SQL FETCH MyCursor INTO :addr, :title, :type_st;
 
                 /*'ECPG_NOT_FOUND' - ������� ��������� ������
                ������. */
-                if (sqlca.sqlcode == ECPG_NOT_FOUND || strncmp(sqlca.sqlstate,"00",2)) break;		
-                printf("\t %d \t %s \t %s \t %s\n", my_id, my_data, date1, date2);
+                if (sqlca.sqlcode == ECPG_NOT_FOUND || strncmp(sqlca.sqlstate,"00",2)) break;
+                std::cout << addr << " " << title << " " << type_st << std::endl;		
+                //printf("\t %d \t %s \t %s \t %s\n", my_id, my_data, date1, date2);
         }
         /*
                 �������� �������.

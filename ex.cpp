@@ -1,8 +1,8 @@
 /* Processed by ecpg (15.0) */
 /* These include files are added by the preprocessor */
-#include "C:/Program Files/PostgreSQL/15/include/ecpglib.h"
-#include "C:/Program Files/PostgreSQL/15/include/ecpgerrno.h"
-#include "C:/Program Files/PostgreSQL/15/include/sqlca.h"
+//#include <ecpglib.h>
+//#include <ecpgerrno.h>
+//#include <sqlca.h>
 /* End of automatic include section */
 
 #line 1 "ex.txt"
@@ -13,11 +13,10 @@ cc -o ex ex.o -L/usr/lib/x86_64-linux-gnu -lecpg,
 ��� -L/usr/lib/x86_64-linux-gnu ���� ��� ����� libecpg.so
 -I/usr/include/postgresql ���� ��� ����� ecpgtype.h, ecpglib.h, ecpgerrno.h, sqlca.h.
 */
-/*
 #include "C:/Program Files/PostgreSQL/15/include/ecpglib.h"
 #include "C:/Program Files/PostgreSQL/15/include/ecpgerrno.h"
 #include "C:/Program Files/PostgreSQL/15/include/sqlca.h"
-*/
+
 
 #include <stdio.h>
 #include <string.h>
@@ -439,34 +438,6 @@ if (sqlca.sqlcode < 0) sqlprint();}
 
 int InsertValues()
 {		
-        /*
-        { ECPGdo(__LINE__, 0, 1, NULL, 0, ECPGst_normal, "select count ( * ) from t_stop", ECPGt_EOIT, 
-	ECPGt_int,&(my_count),(long)1,(long)1,sizeof(int), 
-	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, ECPGt_EORT);
-#line 210 "ex.txt"
-
-if (sqlca.sqlcode < 0) sqlprint();}
-#line 210 "ex.txt"
-*/
-/*
-        if(my_count==0)
-        {	
-                my_id=1;
-        }
-        else
-        {
-                { ECPGdo(__LINE__, 0, 1, NULL, 0, ECPGst_normal, "select max ( id ) from t_stop", ECPGt_EOIT, 
-	ECPGt_int,&(my_id),(long)1,(long)1,sizeof(int), 
-	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, ECPGt_EORT);
-        
-#line 217 "ex.txt"
-
-if (sqlca.sqlcode < 0) sqlprint();}
-#line 217 "ex.txt"
-
-                my_id=my_id+1;
-        }
-        */
         
         
         std::cout << "enter new 'address_id' >"; 
@@ -525,23 +496,16 @@ if (sqlca.sqlcode < 0) sqlprint();}
 
 int ReadAllRecord()
 {
-        /*
-                ���������� �������.
-                ����� ���������: EXEC SQL DECLARE <cursor_name> CURSOR FOR <sql_statement>;
-        */
-        /* declare MyCursor cursor for select id , coalesce ( name , '' ) , coalesce ( cast ( date1 as varchar ) , '' ) , coalesce ( cast ( date2 as varchar ) , '' ) from exTab order by id */
-#line 268 "ex.txt"
+        /* declare MyCursor cursor for select address_id , title , type_station from t_stop order by address_id */
+#line 264 "ex.txt"
 
-        /*
-            �������� �������.
-            ����� ���������: EXEC SQL OPEN <cursor_name>;
-        */
-        { ECPGdo(__LINE__, 0, 1, NULL, 0, ECPGst_normal, "declare MyCursor cursor for select id , coalesce ( name , '' ) , coalesce ( cast ( date1 as varchar ) , '' ) , coalesce ( cast ( date2 as varchar ) , '' ) from exTab order by id", ECPGt_EOIT, ECPGt_EORT);
-#line 273 "ex.txt"
+        { ECPGdo(__LINE__, 0, 1, NULL, 0, ECPGst_normal, "declare MyCursor cursor for select address_id , title , type_station from t_stop order by address_id", ECPGt_EOIT, ECPGt_EORT);
+#line 265 "ex.txt"
 
 if (sqlca.sqlcode < 0) sqlprint();}
-#line 273 "ex.txt"
+#line 265 "ex.txt"
 
+    
         while(1)
         {
             /*
@@ -550,40 +514,36 @@ if (sqlca.sqlcode < 0) sqlprint();}
                                    ��� <var_list> - ������ ����������	
             */
                 { ECPGdo(__LINE__, 0, 1, NULL, 0, ECPGst_normal, "fetch MyCursor", ECPGt_EOIT, 
-	ECPGt_int,&(my_id),(long)1,(long)1,sizeof(int), 
+	ECPGt_int,&(addr),(long)1,(long)1,sizeof(int), 
 	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, 
-	ECPGt_char,(my_data),(long)256,(long)1,(256)*sizeof(char), 
+	ECPGt_char,(title),(long)64,(long)1,(64)*sizeof(char), 
 	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, 
-	ECPGt_char,(date1),(long)10,(long)1,(10)*sizeof(char), 
-	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, 
-	ECPGt_char,(date2),(long)10,(long)1,(10)*sizeof(char), 
+	ECPGt_int,&(type_st),(long)1,(long)1,sizeof(int), 
 	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, ECPGt_EORT);
-#line 281 "ex.txt"
+#line 274 "ex.txt"
 
 if (sqlca.sqlcode < 0) sqlprint();}
-#line 281 "ex.txt"
+#line 274 "ex.txt"
 
-
-                /*'ECPG_NOT_FOUND' - ������� ��������� ������
-               ������. */
-                if (sqlca.sqlcode == ECPG_NOT_FOUND || strncmp(sqlca.sqlstate,"00",2)) break;		
-                printf("\t %d \t %s \t %s \t %s\n", my_id, my_data, date1, date2);
+                if (sqlca.sqlcode == ECPG_NOT_FOUND || strncmp(sqlca.sqlstate,"00",2)) break;
+                std::cout << addr << " " << title << " " << type_st << std::endl;		
+                //printf("\t %d \t %s \t %s \t %s\n", my_id, my_data, date1, date2);
         }
         /*
                 �������� �������.
                 ����� ���������: EXEC SQL CLOSE <cursor_name>;
         */
         { ECPGdo(__LINE__, 0, 1, NULL, 0, ECPGst_normal, "close MyCursor", ECPGt_EOIT, ECPGt_EORT);
-#line 292 "ex.txt"
+#line 286 "ex.txt"
 
 if (sqlca.sqlcode < 0) sqlprint();}
-#line 292 "ex.txt"
+#line 286 "ex.txt"
 
         { ECPGtrans(__LINE__, NULL, "commit");
-#line 293 "ex.txt"
+#line 287 "ex.txt"
 
 if (sqlca.sqlcode < 0) sqlprint();}
-#line 293 "ex.txt"
+#line 287 "ex.txt"
 
         return 0;
 }
@@ -608,10 +568,10 @@ int SelectValues()
 	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, 
 	ECPGt_char,(my_data),(long)256,(long)1,(256)*sizeof(char), 
 	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, ECPGt_EORT);
-#line 310 "ex.txt"
+#line 304 "ex.txt"
 
 if (sqlca.sqlcode < 0) sqlprint();}
-#line 310 "ex.txt"
+#line 304 "ex.txt"
 
         printf("id: %d, data: %s \n", my_id, my_data);
         return 0;
@@ -631,17 +591,17 @@ int UpdateValues()
 	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, 
 	ECPGt_int,&(my_id),(long)1,(long)1,sizeof(int), 
 	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, ECPGt_EOIT, ECPGt_EORT);
-#line 324 "ex.txt"
+#line 318 "ex.txt"
 
 if (sqlca.sqlcode < 0) sqlprint();}
-#line 324 "ex.txt"
+#line 318 "ex.txt"
 	
 
         { ECPGtrans(__LINE__, NULL, "commit");
-#line 326 "ex.txt"
+#line 320 "ex.txt"
 
 if (sqlca.sqlcode < 0) sqlprint();}
-#line 326 "ex.txt"
+#line 320 "ex.txt"
 
         return 0;
 }
@@ -656,19 +616,19 @@ int DeleteValues()
         { ECPGdo(__LINE__, 0, 1, NULL, 0, ECPGst_normal, "delete from exTab where id = $1 ", 
 	ECPGt_int,&(my_id),(long)1,(long)1,sizeof(int), 
 	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, ECPGt_EOIT, ECPGt_EORT);
-#line 337 "ex.txt"
+#line 331 "ex.txt"
 
 if (sqlca.sqlcode < 0) sqlprint();}
-#line 337 "ex.txt"
+#line 331 "ex.txt"
 
         /*
                 ��������� ����������, �.� ������� ������ �� ����
         */
         { ECPGtrans(__LINE__, NULL, "commit");
-#line 341 "ex.txt"
+#line 335 "ex.txt"
 
 if (sqlca.sqlcode < 0) sqlprint();}
-#line 341 "ex.txt"
+#line 335 "ex.txt"
 
 }
 

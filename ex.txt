@@ -5,11 +5,11 @@ cc -o ex ex.o -L/usr/lib/x86_64-linux-gnu -lecpg,
 ��� -L/usr/lib/x86_64-linux-gnu ���� ��� ����� libecpg.so
 -I/usr/include/postgresql ���� ��� ����� ecpgtype.h, ecpglib.h, ecpgerrno.h, sqlca.h.
 */
-/*
+
+
 #include "C:/Program Files/PostgreSQL/15/include/ecpglib.h"
 #include "C:/Program Files/PostgreSQL/15/include/ecpgerrno.h"
 #include "C:/Program Files/PostgreSQL/15/include/sqlca.h"
-*/
 
 #include <stdio.h>
 #include <string.h>
@@ -204,21 +204,6 @@ printf("select 'id_max' >");
 
 int InsertValues()
 {		
-        /*
-                ��������� id
-        */
-        EXEC SQL SELECT count(*) INTO :my_count FROM t_stop;
-        if(my_count==0)
-        {	
-                my_id=1;
-        }
-        else
-        {
-                EXEC SQL SELECT max(id) INTO :my_id FROM t_stop;
-                my_id=my_id+1;
-        }
-        
-        
         
         std::cout << "enter new 'address_id' >"; 
         std::cin >> addr;
@@ -227,29 +212,6 @@ int InsertValues()
         std::cout << "enter new 'stantion type' >"; 
         std::cin >> type_st;
 
-        //printf("enter new 'data' >");
-        
-        //scanf("%c", my_data);
-         
-        // my_data[0]='\0';
-        //scanf("%[ a-zA-Z0-9+,�-��-�/-.]",my_data);
-        
-
-        //printf("enter new 'date1' >");
-       
-        //scanf("%c", date1);
-      
-        //    date1[0]='\0';
-        //scanf("%[ a-zA-Z0-9+,�-��-�/-.]",date1);
-
-        //printf("enter new 'date2' >");
-        //scanf("%c", date2);
-        
-        //    date2[0]='\0';
-        //scanf("%[ a-zA-Z0-9+,�-��-�/-.]",date2);
-        
-        
-        
         EXEC SQL INSERT INTO t_stop( address_id , title , type_station) VALUES(:addr, :title, :type_st);
 
         EXEC SQL COMMIT;
@@ -266,23 +228,13 @@ int ReadAllRecord()
     
         while(1)
         {
-            /*
-                        ������ �� �������.
-                        ����� ���������: EXEC SQL FETCH <cursor_name> INTO <var_list>;,
-                                   ��� <var_list> - ������ ����������	
-            */
+           
                 EXEC SQL FETCH MyCursor INTO :addr, :title, :type_st;
 
-                /*'ECPG_NOT_FOUND' - ������� ��������� ������
-               ������. */
                 if (sqlca.sqlcode == ECPG_NOT_FOUND || strncmp(sqlca.sqlstate,"00",2)) break;
                 std::cout << addr << " " << title << " " << type_st << std::endl;		
-                //printf("\t %d \t %s \t %s \t %s\n", my_id, my_data, date1, date2);
         }
-        /*
-                �������� �������.
-                ����� ���������: EXEC SQL CLOSE <cursor_name>;
-        */
+        
         EXEC SQL CLOSE MyCursor;
         EXEC SQL COMMIT;
         return 0;
@@ -296,15 +248,16 @@ int ReadAllRecord()
 
 int SelectValues()
 {		
-        printf("select 'id' >");
-        scanf("%d", &my_id);
-        /*
-                ��������� ������ �� ������� � ���������� my_id, my_data
-        */
-        EXEC SQL SELECT id, name INTO :my_id, :my_data FROM exTab WHERE id = :my_id;
-        printf("id: %d, data: %s \n", my_id, my_data);
+        std::cout << "select 'address_id' >";
+        std::cin >> addr;
+        //printf("select 'id' >");
+        //scanf("%d", &my_id);
+        
+        EXEC SQL SELECT address_id, title, type_station INTO :addr, :title, :type_st FROM t_stop WHERE address_id = :addr;
+        std::cout << addr << " " << title << " " << type_st << std::endl;
         return 0;
 }
+
 int UpdateValues()
 {	
         printf("select updatable 'id' >");

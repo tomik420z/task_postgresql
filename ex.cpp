@@ -1,8 +1,5 @@
 /* Processed by ecpg (15.0) */
-/* These include files are added by the preprocessor */
-//#include <ecpglib.h>
-//#include <ecpgerrno.h>
-//#include <sqlca.h>
+/* These include f
 /* End of automatic include section */
 
 #line 1 "ex.txt"
@@ -13,10 +10,11 @@ cc -o ex ex.o -L/usr/lib/x86_64-linux-gnu -lecpg,
 ��� -L/usr/lib/x86_64-linux-gnu ���� ��� ����� libecpg.so
 -I/usr/include/postgresql ���� ��� ����� ecpgtype.h, ecpglib.h, ecpgerrno.h, sqlca.h.
 */
+
+
 #include "C:/Program Files/PostgreSQL/15/include/ecpglib.h"
 #include "C:/Program Files/PostgreSQL/15/include/ecpgerrno.h"
 #include "C:/Program Files/PostgreSQL/15/include/sqlca.h"
-
 
 #include <stdio.h>
 #include <string.h>
@@ -439,7 +437,6 @@ if (sqlca.sqlcode < 0) sqlprint();}
 int InsertValues()
 {		
         
-        
         std::cout << "enter new 'address_id' >"; 
         std::cin >> addr;
         std::cout << "enter new 'title' >";
@@ -447,29 +444,6 @@ int InsertValues()
         std::cout << "enter new 'stantion type' >"; 
         std::cin >> type_st;
 
-        //printf("enter new 'data' >");
-        
-        //scanf("%c", my_data);
-         
-        // my_data[0]='\0';
-        //scanf("%[ a-zA-Z0-9+,�-��-�/-.]",my_data);
-        
-
-        //printf("enter new 'date1' >");
-       
-        //scanf("%c", date1);
-      
-        //    date1[0]='\0';
-        //scanf("%[ a-zA-Z0-9+,�-��-�/-.]",date1);
-
-        //printf("enter new 'date2' >");
-        //scanf("%c", date2);
-        
-        //    date2[0]='\0';
-        //scanf("%[ a-zA-Z0-9+,�-��-�/-.]",date2);
-        
-        
-        
         { ECPGdo(__LINE__, 0, 1, NULL, 0, ECPGst_normal, "insert into t_stop ( address_id , title , type_station ) values ( $1  , $2  , $3  )", 
 	ECPGt_int,&(addr),(long)1,(long)1,sizeof(int), 
 	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, 
@@ -477,17 +451,17 @@ int InsertValues()
 	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, 
 	ECPGt_int,&(type_st),(long)1,(long)1,sizeof(int), 
 	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, ECPGt_EOIT, ECPGt_EORT);
-#line 253 "ex.txt"
+#line 215 "ex.txt"
 
 if (sqlca.sqlcode < 0) sqlprint();}
-#line 253 "ex.txt"
+#line 215 "ex.txt"
 
 
         { ECPGtrans(__LINE__, NULL, "commit");
-#line 255 "ex.txt"
+#line 217 "ex.txt"
 
 if (sqlca.sqlcode < 0) sqlprint();}
-#line 255 "ex.txt"
+#line 217 "ex.txt"
 
         return 0;
 }
@@ -497,22 +471,18 @@ if (sqlca.sqlcode < 0) sqlprint();}
 int ReadAllRecord()
 {
         /* declare MyCursor cursor for select address_id , title , type_station from t_stop order by address_id */
-#line 264 "ex.txt"
+#line 226 "ex.txt"
 
         { ECPGdo(__LINE__, 0, 1, NULL, 0, ECPGst_normal, "declare MyCursor cursor for select address_id , title , type_station from t_stop order by address_id", ECPGt_EOIT, ECPGt_EORT);
-#line 265 "ex.txt"
+#line 227 "ex.txt"
 
 if (sqlca.sqlcode < 0) sqlprint();}
-#line 265 "ex.txt"
+#line 227 "ex.txt"
 
     
         while(1)
         {
-            /*
-                        ������ �� �������.
-                        ����� ���������: EXEC SQL FETCH <cursor_name> INTO <var_list>;,
-                                   ��� <var_list> - ������ ����������	
-            */
+           
                 { ECPGdo(__LINE__, 0, 1, NULL, 0, ECPGst_normal, "fetch MyCursor", ECPGt_EOIT, 
 	ECPGt_int,&(addr),(long)1,(long)1,sizeof(int), 
 	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, 
@@ -520,30 +490,27 @@ if (sqlca.sqlcode < 0) sqlprint();}
 	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, 
 	ECPGt_int,&(type_st),(long)1,(long)1,sizeof(int), 
 	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, ECPGt_EORT);
-#line 274 "ex.txt"
+#line 232 "ex.txt"
 
 if (sqlca.sqlcode < 0) sqlprint();}
-#line 274 "ex.txt"
+#line 232 "ex.txt"
+
 
                 if (sqlca.sqlcode == ECPG_NOT_FOUND || strncmp(sqlca.sqlstate,"00",2)) break;
                 std::cout << addr << " " << title << " " << type_st << std::endl;		
-                //printf("\t %d \t %s \t %s \t %s\n", my_id, my_data, date1, date2);
         }
-        /*
-                �������� �������.
-                ����� ���������: EXEC SQL CLOSE <cursor_name>;
-        */
+        
         { ECPGdo(__LINE__, 0, 1, NULL, 0, ECPGst_normal, "close MyCursor", ECPGt_EOIT, ECPGt_EORT);
-#line 286 "ex.txt"
+#line 238 "ex.txt"
 
 if (sqlca.sqlcode < 0) sqlprint();}
-#line 286 "ex.txt"
+#line 238 "ex.txt"
 
         { ECPGtrans(__LINE__, NULL, "commit");
-#line 287 "ex.txt"
+#line 239 "ex.txt"
 
 if (sqlca.sqlcode < 0) sqlprint();}
-#line 287 "ex.txt"
+#line 239 "ex.txt"
 
         return 0;
 }
@@ -556,26 +523,27 @@ if (sqlca.sqlcode < 0) sqlprint();}
 
 int SelectValues()
 {		
-        printf("select 'id' >");
-        scanf("%d", &my_id);
-        /*
-                ��������� ������ �� ������� � ���������� my_id, my_data
-        */
-        { ECPGdo(__LINE__, 0, 1, NULL, 0, ECPGst_normal, "select id , name from exTab where id = $1 ", 
-	ECPGt_int,&(my_id),(long)1,(long)1,sizeof(int), 
+        std::cout << "select 'address_id' >";
+        std::cin >> addr;
+        
+        { ECPGdo(__LINE__, 0, 1, NULL, 0, ECPGst_normal, "select address_id , title , type_station from t_stop where address_id = $1 ", 
+	ECPGt_int,&(addr),(long)1,(long)1,sizeof(int), 
 	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, ECPGt_EOIT, 
-	ECPGt_int,&(my_id),(long)1,(long)1,sizeof(int), 
+	ECPGt_int,&(addr),(long)1,(long)1,sizeof(int), 
 	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, 
-	ECPGt_char,(my_data),(long)256,(long)1,(256)*sizeof(char), 
+	ECPGt_char,(title),(long)64,(long)1,(64)*sizeof(char), 
+	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, 
+	ECPGt_int,&(type_st),(long)1,(long)1,sizeof(int), 
 	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, ECPGt_EORT);
-#line 304 "ex.txt"
+#line 256 "ex.txt"
 
 if (sqlca.sqlcode < 0) sqlprint();}
-#line 304 "ex.txt"
+#line 256 "ex.txt"
 
-        printf("id: %d, data: %s \n", my_id, my_data);
+        std::cout << addr << " " << title << " " << type_st << std::endl;
         return 0;
 }
+
 int UpdateValues()
 {	
         printf("select updatable 'id' >");
@@ -591,17 +559,17 @@ int UpdateValues()
 	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, 
 	ECPGt_int,&(my_id),(long)1,(long)1,sizeof(int), 
 	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, ECPGt_EOIT, ECPGt_EORT);
-#line 318 "ex.txt"
+#line 271 "ex.txt"
 
 if (sqlca.sqlcode < 0) sqlprint();}
-#line 318 "ex.txt"
+#line 271 "ex.txt"
 	
 
         { ECPGtrans(__LINE__, NULL, "commit");
-#line 320 "ex.txt"
+#line 273 "ex.txt"
 
 if (sqlca.sqlcode < 0) sqlprint();}
-#line 320 "ex.txt"
+#line 273 "ex.txt"
 
         return 0;
 }
@@ -616,19 +584,19 @@ int DeleteValues()
         { ECPGdo(__LINE__, 0, 1, NULL, 0, ECPGst_normal, "delete from exTab where id = $1 ", 
 	ECPGt_int,&(my_id),(long)1,(long)1,sizeof(int), 
 	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, ECPGt_EOIT, ECPGt_EORT);
-#line 331 "ex.txt"
+#line 284 "ex.txt"
 
 if (sqlca.sqlcode < 0) sqlprint();}
-#line 331 "ex.txt"
+#line 284 "ex.txt"
 
         /*
                 ��������� ����������, �.� ������� ������ �� ����
         */
         { ECPGtrans(__LINE__, NULL, "commit");
-#line 335 "ex.txt"
+#line 288 "ex.txt"
 
 if (sqlca.sqlcode < 0) sqlprint();}
-#line 335 "ex.txt"
+#line 288 "ex.txt"
 
 }
 

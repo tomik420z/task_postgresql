@@ -4,19 +4,10 @@
 /* End of automatic include section */
 
 #line 1 "ex.txt"
-/*
-ecpg ex.txt
-cc -I/usr/include/postgresql -c ex.c
-cc -o ex ex.o -L/usr/lib/x86_64-linux-gnu -lecpg,
-��� -L/usr/lib/x86_64-linux-gnu ���� ��� ����� libecpg.so
--I/usr/include/postgresql ���� ��� ����� ecpgtype.h, ecpglib.h, ecpgerrno.h, sqlca.h.
-*/
-
-
 #include "C:/Program Files/PostgreSQL/15/include/ecpglib.h"
 #include "C:/Program Files/PostgreSQL/15/include/ecpgerrno.h"
 #include "C:/Program Files/PostgreSQL/15/include/sqlca.h"
-//#include "db_public_station.h"
+#include "db_public_station.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -92,7 +83,7 @@ struct sqlca_t *ECPGget_sqlca(void);
 
 #endif
 
-#line 20 "ex.txt"
+#line 11 "ex.txt"
 
 
 /* exec sql begin declare section */ 
@@ -100,140 +91,33 @@ struct sqlca_t *ECPGget_sqlca(void);
             
             
 
-#line 23 "ex.txt"
+#line 14 "ex.txt"
  char ConnectionString [] = "public transport@127.0.0.1:5432" ;
  
-#line 24 "ex.txt"
+#line 15 "ex.txt"
  char Login [] = "postgres" ;
  
-#line 25 "ex.txt"
+#line 16 "ex.txt"
  char Password [] = "20012001a" ;
 /* exec sql end declare section */
-#line 26 "ex.txt"
+#line 17 "ex.txt"
 
 
-/* exec sql begin declare section */
-        //int my_id;
-        //char my_data[256];
-        //int my_count;
-        //char date1[10];
-        //char date2[10];
-         
-         
-         
-
-#line 34 "ex.txt"
- int addr ;
- 
-#line 35 "ex.txt"
- char title [ 64 ] ;
- 
-#line 36 "ex.txt"
- int type_st ;
-/* exec sql end declare section */
-#line 37 "ex.txt"
-	
 
 /* exec sql whenever sqlerror  sqlprint ; */
-#line 39 "ex.txt"
+#line 20 "ex.txt"
 	
 
-class table_station {
-public:
-using id_t = int;
-    using title_t = std::string;
-    using station_t = int;
-protected:
-/* exec sql begin declare section */  
 
-         
-         
-         
-
-#line 49 "ex.txt"
- int address_id ;
- 
-#line 50 "ex.txt"
- char title [ 64 ] ;
- 
-#line 51 "ex.txt"
- int type_station ;
-/* exec sql end declare section */
-#line 52 "ex.txt"
-
-
-public:
-
-    table_station() = default;
-    ~table_station() = default;
-    
-    const char* insert() const noexcept {
-        return "INSERT INTO t_stop(address_id, title, type_station) VALUES(?, ?, ?);"; 
-    }
-
-    void exec_3args() {
-        { ECPGdo(__LINE__, 0, 1, NULL, 0, ECPGst_execute, "mystmt", 
-	ECPGt_int,&(address_id),(long)1,(long)1,sizeof(int), 
-	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, 
-	ECPGt_char,(title),(long)64,(long)1,(64)*sizeof(char), 
-	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, 
-	ECPGt_int,&(type_station),(long)1,(long)1,sizeof(int), 
-	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, ECPGt_EOIT, ECPGt_EORT);
-#line 64 "ex.txt"
-
-if (sqlca.sqlcode < 0) sqlprint();}
-#line 64 "ex.txt"
-
-    }
-
-    void exec_fetch() {        
-        //EXEC SQL FETCH MyCursor INTO :address_id, :title, :type_station;
-    }
-
-
-
-    void input() {
-        std::cout << "enter new 'address_id' >"; 
-        std::cin >> address_id;
-        std::cout << "enter new 'title' >";
-        std::cin >> title;
-        std::cout << "enter new 'stantion type' >"; 
-        std::cin >> type_station;
-    }
-
-    void enter_id() {
-        std::cout << "enter new 'address_id' >"; 
-        std::cin >> address_id;
-    }
-/*
-    void exec_select() {
-            EXEC SQL EXECUTE sqlstmt INTO : address_id, title, type_station USING : address_id;
-    }
-*/
-    const char* select_show() const noexcept {
-        return "SELECT address_id, title, type_station FROM t_stop ORDER BY address_id";
-    }
-
-    void print() const noexcept {
-        std::cout << address_id << " "  << title << " " << type_station << std::endl;
-     }
-
-
-
-
-};
-
-
-   
 int menu();
+
 int main() {
 
         { ECPGconnect(__LINE__, 0, ConnectionString , Login , Password , NULL, 0); 
-#line 109 "ex.txt"
+#line 27 "ex.txt"
 
 if (sqlca.sqlcode < 0) sqlprint();}
-#line 109 "ex.txt"
-
+#line 27 "ex.txt"
 
 
         if( sqlca.sqlcode != 0 || strncmp(sqlca.sqlstate,"00",2))
@@ -247,43 +131,47 @@ if (sqlca.sqlcode < 0) sqlprint();}
                 menu();
         }	
         { ECPGdisconnect(__LINE__, "CURRENT");
-#line 122 "ex.txt"
+#line 39 "ex.txt"
 
 if (sqlca.sqlcode < 0) sqlprint();}
-#line 122 "ex.txt"
+#line 39 "ex.txt"
 
         printf("disconnect --OK\n");
+
+        return 0;
 }
 
 
 
-int Dynamic_sql_insert()
+int change_data_table(const char * req_sql)
 {
-table_station table;
-/* exec sql begin declare section */ 
-             
 
-#line 132 "ex.txt"
- const char * stmt = table . insert () ;
-/* exec sql end declare section */
-#line 133 "ex.txt"
-
-
-        { ECPGprepare(__LINE__, NULL, 0, "mystmt", stmt);
-#line 135 "ex.txt"
-
-if (sqlca.sqlcode < 0) sqlprint();}
-#line 135 "ex.txt"
-
-        table.input();
+        /* exec sql begin declare section */ 
+                     
         
-        table.exec_3args();
-       // EXEC SQL EXECUTE mystmt USING :address_id, :title, :type_station;
-        { ECPGtrans(__LINE__, NULL, "commit");
-#line 140 "ex.txt"
+#line 51 "ex.txt"
+ const char * stmt = req_sql ;
+/* exec sql end declare section */
+#line 52 "ex.txt"
+
+
+        { ECPGprepare(__LINE__, NULL, 0, "sqlstmt", stmt);
+#line 54 "ex.txt"
 
 if (sqlca.sqlcode < 0) sqlprint();}
-#line 140 "ex.txt"
+#line 54 "ex.txt"
+
+        { ECPGdo(__LINE__, 0, 1, NULL, 0, ECPGst_execute, "sqlstmt", ECPGt_EOIT, ECPGt_EORT);
+#line 55 "ex.txt"
+
+if (sqlca.sqlcode < 0) sqlprint();}
+#line 55 "ex.txt"
+
+        { ECPGtrans(__LINE__, NULL, "commit");
+#line 56 "ex.txt"
+
+if (sqlca.sqlcode < 0) sqlprint();}
+#line 56 "ex.txt"
 
         return 0;
 }
@@ -297,48 +185,48 @@ int Dynamic_sql_select_1(const char * request_sql)
                  
                      
         
-#line 147 "ex.txt"
+#line 63 "ex.txt"
  int colcount ;
  
-#line 148 "ex.txt"
+#line 64 "ex.txt"
  int index ;
  
-#line 149 "ex.txt"
+#line 65 "ex.txt"
  char str [ 1024 ] ;
  
-#line 150 "ex.txt"
+#line 66 "ex.txt"
  char colName [ 1024 ] ;
  
-#line 151 "ex.txt"
+#line 67 "ex.txt"
  const char * stmt = request_sql ;
 /* exec sql end declare section */
-#line 152 "ex.txt"
+#line 68 "ex.txt"
 
 
         { ECPGprepare(__LINE__, NULL, 0, "sqlstmt", stmt);
-#line 154 "ex.txt"
+#line 70 "ex.txt"
 
 if (sqlca.sqlcode < 0) sqlprint();}
-#line 154 "ex.txt"
+#line 70 "ex.txt"
 
 
         ECPGallocate_desc(__LINE__, "my_descr");
-#line 156 "ex.txt"
+#line 72 "ex.txt"
 
 if (sqlca.sqlcode < 0) sqlprint();
-#line 156 "ex.txt"
+#line 72 "ex.txt"
    
 
         /* declare my_cursor cursor for $1 */
-#line 158 "ex.txt"
+#line 74 "ex.txt"
 
         { ECPGdo(__LINE__, 0, 1, NULL, 0, ECPGst_normal, "declare my_cursor cursor for $1", 
 	ECPGt_char_variable,(ECPGprepared_statement(NULL, "sqlstmt", __LINE__)),(long)1,(long)1,(1)*sizeof(char), 
 	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, ECPGt_EOIT, ECPGt_EORT);
-#line 159 "ex.txt"
+#line 75 "ex.txt"
 
 if (sqlca.sqlcode < 0) sqlprint();}
-#line 159 "ex.txt"
+#line 75 "ex.txt"
 
 
 
@@ -346,56 +234,56 @@ if (sqlca.sqlcode < 0) sqlprint();}
         { ECPGdo(__LINE__, 0, 1, NULL, 0, ECPGst_normal, "fetch next from my_cursor", ECPGt_EOIT, 
 	ECPGt_descriptor, "my_descr", 1L, 1L, 1L, 
 	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, ECPGt_EORT);
-#line 163 "ex.txt"
+#line 79 "ex.txt"
 
 if (sqlca.sqlcode < 0) sqlprint();}
-#line 163 "ex.txt"
+#line 79 "ex.txt"
 
         
         { ECPGget_desc_header(__LINE__, "my_descr", &(colcount));
 
-#line 165 "ex.txt"
+#line 81 "ex.txt"
 
 if (sqlca.sqlcode < 0) sqlprint();}
-#line 165 "ex.txt"
+#line 81 "ex.txt"
 
         for(index = 1; index <= colcount; index++) {
                 { ECPGget_desc(__LINE__, "my_descr", index,ECPGd_data,
 	ECPGt_char,(str),(long)1024,(long)1,(1024)*sizeof(char), ECPGd_EODT);
 
-#line 167 "ex.txt"
+#line 83 "ex.txt"
 
 if (sqlca.sqlcode < 0) sqlprint();}
-#line 167 "ex.txt"
+#line 83 "ex.txt"
 
                 { ECPGget_desc(__LINE__, "my_descr", index,ECPGd_name,
 	ECPGt_char,(colName),(long)1024,(long)1,(1024)*sizeof(char), ECPGd_EODT);
 
-#line 168 "ex.txt"
+#line 84 "ex.txt"
 
 if (sqlca.sqlcode < 0) sqlprint();}
-#line 168 "ex.txt"
+#line 84 "ex.txt"
 
                 std::cout << str << " ";
         }
         std::cout << '\n';
         ECPGdeallocate_desc(__LINE__, "my_descr");
-#line 172 "ex.txt"
+#line 88 "ex.txt"
 
 if (sqlca.sqlcode < 0) sqlprint();
-#line 172 "ex.txt"
+#line 88 "ex.txt"
 
         { ECPGdo(__LINE__, 0, 1, NULL, 0, ECPGst_normal, "close my_cursor", ECPGt_EOIT, ECPGt_EORT);
-#line 173 "ex.txt"
+#line 89 "ex.txt"
 
 if (sqlca.sqlcode < 0) sqlprint();}
-#line 173 "ex.txt"
+#line 89 "ex.txt"
 
         { ECPGtrans(__LINE__, NULL, "commit");
-#line 174 "ex.txt"
+#line 90 "ex.txt"
 
 if (sqlca.sqlcode < 0) sqlprint();}
-#line 174 "ex.txt"
+#line 90 "ex.txt"
 
         
 
@@ -450,7 +338,7 @@ printf("select 'id_max' >");
     return 0;
 }
 */
-
+/*
 int InsertValues()
 {	
                
@@ -461,30 +349,14 @@ int InsertValues()
         std::cout << "enter new 'stantion type' >"; 
         std::cin >> type_st;
         
-        { ECPGdo(__LINE__, 0, 1, NULL, 0, ECPGst_normal, "insert into t_stop ( address_id , title , type_station ) values ( $1  , $2  , $3  )", 
-	ECPGt_int,&(addr),(long)1,(long)1,sizeof(int), 
-	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, 
-	ECPGt_char,(title),(long)64,(long)1,(64)*sizeof(char), 
-	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, 
-	ECPGt_int,&(type_st),(long)1,(long)1,sizeof(int), 
-	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, ECPGt_EOIT, ECPGt_EORT);
-#line 239 "ex.txt"
+        EXEC SQL INSERT INTO t_stop( address_id , title , type_station) VALUES(:addr, :title, :type_st);
 
-if (sqlca.sqlcode < 0) sqlprint();}
-#line 239 "ex.txt"
-
-
-        { ECPGtrans(__LINE__, NULL, "commit");
-#line 241 "ex.txt"
-
-if (sqlca.sqlcode < 0) sqlprint();}
-#line 241 "ex.txt"
-
+        EXEC SQL COMMIT;
         return 0;
 }
+*/
 
-
-int ReadAllRecord()
+int ReadAllRecord(const char * req_sql)
 {
         /* exec sql begin declare section */ 
                  
@@ -493,48 +365,48 @@ int ReadAllRecord()
                  
                      
         
-#line 249 "ex.txt"
+#line 165 "ex.txt"
  int colcount ;
  
-#line 250 "ex.txt"
+#line 166 "ex.txt"
  int index ;
  
-#line 251 "ex.txt"
+#line 167 "ex.txt"
  char str [ 1024 ] ;
  
-#line 252 "ex.txt"
+#line 168 "ex.txt"
  char colName [ 1024 ] ;
  
-#line 253 "ex.txt"
- const char * stmt = "SELECT address_id, title, type_station FROM t_stop ORDER BY address_id" ;
+#line 169 "ex.txt"
+ const char * stmt = req_sql ;
 /* exec sql end declare section */
-#line 254 "ex.txt"
+#line 170 "ex.txt"
 
  
         { ECPGprepare(__LINE__, NULL, 0, "sqlstmt", stmt);
-#line 256 "ex.txt"
+#line 172 "ex.txt"
 
 if (sqlca.sqlcode < 0) sqlprint();}
-#line 256 "ex.txt"
+#line 172 "ex.txt"
 
 
         ECPGallocate_desc(__LINE__, "myDescr");
-#line 258 "ex.txt"
+#line 174 "ex.txt"
 
 if (sqlca.sqlcode < 0) sqlprint();
-#line 258 "ex.txt"
+#line 174 "ex.txt"
    
 
         /* declare MyCursor cursor for $1 */
-#line 260 "ex.txt"
+#line 176 "ex.txt"
 
         { ECPGdo(__LINE__, 0, 1, NULL, 0, ECPGst_normal, "declare MyCursor cursor for $1", 
 	ECPGt_char_variable,(ECPGprepared_statement(NULL, "sqlstmt", __LINE__)),(long)1,(long)1,(1)*sizeof(char), 
 	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, ECPGt_EOIT, ECPGt_EORT);
-#line 261 "ex.txt"
+#line 177 "ex.txt"
 
 if (sqlca.sqlcode < 0) sqlprint();}
-#line 261 "ex.txt"
+#line 177 "ex.txt"
 
         
         while(1)
@@ -542,58 +414,58 @@ if (sqlca.sqlcode < 0) sqlprint();}
                 { ECPGdo(__LINE__, 0, 1, NULL, 0, ECPGst_normal, "fetch next from MyCursor", ECPGt_EOIT, 
 	ECPGt_descriptor, "myDescr", 1L, 1L, 1L, 
 	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, ECPGt_EORT);
-#line 265 "ex.txt"
+#line 181 "ex.txt"
 
 if (sqlca.sqlcode < 0) sqlprint();}
-#line 265 "ex.txt"
+#line 181 "ex.txt"
 
                 
                 if (sqlca.sqlcode == ECPG_NOT_FOUND || strncmp(sqlca.sqlstate,"00",2)) break;
                 { ECPGget_desc_header(__LINE__, "myDescr", &(colcount));
 
-#line 268 "ex.txt"
+#line 184 "ex.txt"
 
 if (sqlca.sqlcode < 0) sqlprint();}
-#line 268 "ex.txt"
+#line 184 "ex.txt"
 
                 for(index = 1; index <= colcount; index++) {
                         { ECPGget_desc(__LINE__, "myDescr", index,ECPGd_data,
 	ECPGt_char,(str),(long)1024,(long)1,(1024)*sizeof(char), ECPGd_EODT);
 
-#line 270 "ex.txt"
+#line 186 "ex.txt"
 
 if (sqlca.sqlcode < 0) sqlprint();}
-#line 270 "ex.txt"
+#line 186 "ex.txt"
 
                         { ECPGget_desc(__LINE__, "myDescr", index,ECPGd_name,
 	ECPGt_char,(colName),(long)1024,(long)1,(1024)*sizeof(char), ECPGd_EODT);
 
-#line 271 "ex.txt"
+#line 187 "ex.txt"
 
 if (sqlca.sqlcode < 0) sqlprint();}
-#line 271 "ex.txt"
+#line 187 "ex.txt"
 
                         std::cout << str << " ";
                 }
                 std::cout << '\n';
         }
         ECPGdeallocate_desc(__LINE__, "myDescr");
-#line 276 "ex.txt"
+#line 192 "ex.txt"
 
 if (sqlca.sqlcode < 0) sqlprint();
-#line 276 "ex.txt"
+#line 192 "ex.txt"
 
         { ECPGdo(__LINE__, 0, 1, NULL, 0, ECPGst_normal, "close MyCursor", ECPGt_EOIT, ECPGt_EORT);
-#line 277 "ex.txt"
+#line 193 "ex.txt"
 
 if (sqlca.sqlcode < 0) sqlprint();}
-#line 277 "ex.txt"
+#line 193 "ex.txt"
 
         { ECPGtrans(__LINE__, NULL, "commit");
-#line 278 "ex.txt"
+#line 194 "ex.txt"
 
 if (sqlca.sqlcode < 0) sqlprint();}
-#line 278 "ex.txt"
+#line 194 "ex.txt"
 
         
         return 0;
@@ -604,7 +476,7 @@ if (sqlca.sqlcode < 0) sqlprint();}
 
 
 
-
+/*
 int SelectValues()
 {	
 
@@ -612,27 +484,16 @@ int SelectValues()
         std::cout << "select 'address_id' >";
         std::cin >> addr;
         
-        { ECPGdo(__LINE__, 0, 1, NULL, 0, ECPGst_normal, "select address_id , title , type_station from t_stop where address_id = $1 ", 
-	ECPGt_int,&(addr),(long)1,(long)1,sizeof(int), 
-	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, ECPGt_EOIT, 
-	ECPGt_int,&(addr),(long)1,(long)1,sizeof(int), 
-	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, 
-	ECPGt_char,(title),(long)64,(long)1,(64)*sizeof(char), 
-	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, 
-	ECPGt_int,&(type_st),(long)1,(long)1,sizeof(int), 
-	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, ECPGt_EORT);
-#line 296 "ex.txt"
-
-if (sqlca.sqlcode < 0) sqlprint();}
-#line 296 "ex.txt"
-
+        EXEC SQL SELECT address_id, title, type_station INTO :addr, :title, :type_st FROM t_stop WHERE address_id = :addr;
         std::cout << addr << " " << title << " " << type_st << std::endl;
         return 0;
-}
+}*/
 
+/*
 int UpdateValues()
 {	
 
+        UPDATE films SET kind = 'Dramatic' WHERE kind = 'Drama';
         std::cout << "select updatable 'address_id' >";
         std::cin >> addr;
         std::cout << "enter new 'title' >";
@@ -640,50 +501,24 @@ int UpdateValues()
         std::cout << "enter new 'type_station' >";
         std::cin >> type_st;
          
-        { ECPGdo(__LINE__, 0, 1, NULL, 0, ECPGst_normal, "update t_stop set title = $1  , type_station = $2  where address_id = $3 ", 
-	ECPGt_char,(title),(long)64,(long)1,(64)*sizeof(char), 
-	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, 
-	ECPGt_int,&(type_st),(long)1,(long)1,sizeof(int), 
-	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, 
-	ECPGt_int,&(addr),(long)1,(long)1,sizeof(int), 
-	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, ECPGt_EOIT, ECPGt_EORT);
-#line 311 "ex.txt"
+        EXEC SQL UPDATE t_stop SET title = :title, type_station = :type_st WHERE address_id = :addr;	
 
-if (sqlca.sqlcode < 0) sqlprint();}
-#line 311 "ex.txt"
-	
-
-        { ECPGtrans(__LINE__, NULL, "commit");
-#line 313 "ex.txt"
-
-if (sqlca.sqlcode < 0) sqlprint();}
-#line 313 "ex.txt"
-
+        EXEC SQL COMMIT;
         return 0;
 }
-
+*/
+/*
 int DeleteValues()
 {
         std::cout << "select deleted 'address_id' >";
         std::cin >> addr;
-        { ECPGdo(__LINE__, 0, 1, NULL, 0, ECPGst_normal, "delete from t_stop where address_id = $1 ", 
-	ECPGt_int,&(addr),(long)1,(long)1,sizeof(int), 
-	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, ECPGt_EOIT, ECPGt_EORT);
-#line 321 "ex.txt"
-
-if (sqlca.sqlcode < 0) sqlprint();}
-#line 321 "ex.txt"
-
-        { ECPGtrans(__LINE__, NULL, "commit");
-#line 322 "ex.txt"
-
-if (sqlca.sqlcode < 0) sqlprint();}
-#line 322 "ex.txt"
-
-}
+        EXEC SQL DELETE FROM t_stop WHERE address_id = :addr;
+        EXEC SQL COMMIT;
+}*/
 
 int menu()
 {
+        table_station table;
         char sitem[512];
         while(1)
         {
@@ -699,7 +534,7 @@ int menu()
             printf("choose menu item > ");
             if(scanf("%s", &sitem)!=1) break;
          
-if (strlen(sitem)>1) continue;   
+            if (strlen(sitem)>1) continue;   
            
                 switch(sitem[0])
                 {
@@ -707,7 +542,7 @@ if (strlen(sitem)>1) continue;
                         {
                                 printf("_____________________\n");
                                 printf("1. show\n");
-                                ReadAllRecord();
+                                ReadAllRecord(table.req_show());
                                 printf("_____________________\n");
                                 break;
                         }
@@ -715,7 +550,8 @@ if (strlen(sitem)>1) continue;
                         {
                                 printf("_____________________\n");
                                 printf("2. select values\n");
-                                SelectValues();
+                                ReadAllRecord(table.req_select());
+                                //SelectValues();
                                 printf("_____________________\n");
                                 break;
                         }
@@ -723,15 +559,17 @@ if (strlen(sitem)>1) continue;
                         {
                                 printf("_____________________\n");
                                 printf("3. update values\n");
-                                UpdateValues();
+                                change_data_table(table.req_update());
+                                //UpdateValues();
                                 printf("_____________________\n");
                                 break;
                         }
                         case '4':
                         {
                                 printf("_____________________\n");
-                                printf("4. insert values\n");	
-                                InsertValues();
+                                printf("4. insert values\n");
+                                change_data_table(table.req_insert());	
+                                //InsertValues();
                                 printf("_____________________\n");
                                 break;
                         }
@@ -739,28 +577,28 @@ if (strlen(sitem)>1) continue;
                         {
                                 printf("_____________________\n");
                                 printf("5. delete values\n");
-                                DeleteValues();
+                                change_data_table(table.req_delete_id());
+                                //DeleteValues();
                                 printf("_____________________\n");
                                 break;
                         }
+                        /*
                         case '6':
                         {
-                               Dynamic_sql_insert();
+                               change_data_table();
                                break;
                         }
                         case '7':
                         {       
-                                std::string str;
-                                std::cin >> str;
-                                std::string req = "SELECT address_id, title, type_station FROM t_stop WHERE address_id=" + str;
-                               Dynamic_sql_select_1(req.c_str());
-                               break;
+                                Dynamic_sql_select_1();
+                                break;
                         }
                          case '8':
                         {
                                //Dynamic_sql_select_2();
                                break;
                         }
+                        */
                         case '9':
                         {
                                 return 0;

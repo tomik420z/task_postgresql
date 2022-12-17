@@ -13,6 +13,7 @@
 #include <string.h>
 #include <iostream>
 #include <string>
+#include <windows.h>
 
 
 #line 1 "C:/Program Files/PostgreSQL/15/include/sqlca.h"
@@ -112,6 +113,9 @@ struct sqlca_t *ECPGget_sqlca(void);
 int menu();
 
 int main() {
+        SetConsoleCP(1251);
+        SetConsoleOutputCP(1251);
+        std::setlocale(LC_ALL, "Russian");
 
         { ECPGconnect(__LINE__, 0, ConnectionString , Login , Password , NULL, 0); 
 #line 27 "ex.txt"
@@ -356,7 +360,7 @@ int InsertValues()
 }
 */
 
-int ReadAllRecord(const char * req_sql)
+int show_req(const char * req_sql)
 {
         /* exec sql begin declare section */ 
                  
@@ -408,9 +412,9 @@ if (sqlca.sqlcode < 0) sqlprint();
 if (sqlca.sqlcode < 0) sqlprint();}
 #line 177 "ex.txt"
 
-        
+        size_t count = 0;
         while(1)
-        {                        
+        {               
                 { ECPGdo(__LINE__, 0, 1, NULL, 0, ECPGst_normal, "fetch next from MyCursor", ECPGt_EOIT, 
 	ECPGt_descriptor, "myDescr", 1L, 1L, 1L, 
 	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, ECPGt_EORT);
@@ -419,25 +423,18 @@ if (sqlca.sqlcode < 0) sqlprint();}
 if (sqlca.sqlcode < 0) sqlprint();}
 #line 181 "ex.txt"
 
-                
                 if (sqlca.sqlcode == ECPG_NOT_FOUND || strncmp(sqlca.sqlstate,"00",2)) break;
                 { ECPGget_desc_header(__LINE__, "myDescr", &(colcount));
 
-#line 184 "ex.txt"
+#line 183 "ex.txt"
 
 if (sqlca.sqlcode < 0) sqlprint();}
-#line 184 "ex.txt"
+#line 183 "ex.txt"
 
-                for(index = 1; index <= colcount; index++) {
-                        { ECPGget_desc(__LINE__, "myDescr", index,ECPGd_data,
-	ECPGt_char,(str),(long)1024,(long)1,(1024)*sizeof(char), ECPGd_EODT);
 
-#line 186 "ex.txt"
-
-if (sqlca.sqlcode < 0) sqlprint();}
-#line 186 "ex.txt"
-
-                        { ECPGget_desc(__LINE__, "myDescr", index,ECPGd_name,
+                if(count == 0) {
+                        for(index = 1; index <= colcount; index++) {
+                                { ECPGget_desc(__LINE__, "myDescr", index,ECPGd_name,
 	ECPGt_char,(colName),(long)1024,(long)1,(1024)*sizeof(char), ECPGd_EODT);
 
 #line 187 "ex.txt"
@@ -445,27 +442,48 @@ if (sqlca.sqlcode < 0) sqlprint();}
 if (sqlca.sqlcode < 0) sqlprint();}
 #line 187 "ex.txt"
 
+                                std::cout.width(25);
+                                std::cout << colName << " ";
+                                std::cout.width(25);
+                        }
+                        std::cout << "\n-----------------------------------------------------------------------------------------------------------------------------------\n";
+                }
+                std::cout << std::endl;
+                
+                
+                for(index = 1; index <= colcount; index++) {
+                        { ECPGget_desc(__LINE__, "myDescr", index,ECPGd_data,
+	ECPGt_char,(str),(long)1024,(long)1,(1024)*sizeof(char), ECPGd_EODT);
+
+#line 198 "ex.txt"
+
+if (sqlca.sqlcode < 0) sqlprint();}
+#line 198 "ex.txt"
+
+                        std::cout.width(25);
                         std::cout << str << " ";
+                        std::cout.width(25);
                 }
                 std::cout << '\n';
+                ++count;
         }
         ECPGdeallocate_desc(__LINE__, "myDescr");
-#line 192 "ex.txt"
+#line 206 "ex.txt"
 
 if (sqlca.sqlcode < 0) sqlprint();
-#line 192 "ex.txt"
+#line 206 "ex.txt"
 
         { ECPGdo(__LINE__, 0, 1, NULL, 0, ECPGst_normal, "close MyCursor", ECPGt_EOIT, ECPGt_EORT);
-#line 193 "ex.txt"
+#line 207 "ex.txt"
 
 if (sqlca.sqlcode < 0) sqlprint();}
-#line 193 "ex.txt"
+#line 207 "ex.txt"
 
         { ECPGtrans(__LINE__, NULL, "commit");
-#line 194 "ex.txt"
+#line 208 "ex.txt"
 
 if (sqlca.sqlcode < 0) sqlprint();}
-#line 194 "ex.txt"
+#line 208 "ex.txt"
 
         
         return 0;
@@ -518,7 +536,7 @@ int DeleteValues()
 
 int menu()
 {
-        table_station table;
+        table_route table;
         char sitem[512];
         while(1)
         {
@@ -542,7 +560,7 @@ int menu()
                         {
                                 printf("_____________________\n");
                                 printf("1. show\n");
-                                ReadAllRecord(table.req_show());
+                                show_req(table.req_show());
                                 printf("_____________________\n");
                                 break;
                         }
@@ -550,7 +568,7 @@ int menu()
                         {
                                 printf("_____________________\n");
                                 printf("2. select values\n");
-                                ReadAllRecord(table.req_select());
+                                show_req(table.req_select());
                                 //SelectValues();
                                 printf("_____________________\n");
                                 break;
@@ -585,12 +603,12 @@ int menu()
                         /*
                         case '6':
                         {
-                               change_data_table();
+                               //change_data_table();
                                break;
                         }
                         case '7':
                         {       
-                                Dynamic_sql_select_1();
+                                //Dynamic_sql_select_1();
                                 break;
                         }
                          case '8':

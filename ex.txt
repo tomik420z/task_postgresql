@@ -159,7 +159,7 @@ int InsertValues()
 }
 */
 
-int ReadAllRecord(const char * req_sql)
+int show_req(const char * req_sql)
 {
         EXEC SQL BEGIN DECLARE SECTION; 
                 int colcount;
@@ -175,19 +175,33 @@ int ReadAllRecord(const char * req_sql)
 
         EXEC SQL DECLARE MyCursor CURSOR FOR sqlstmt;
         EXEC SQL OPEN MyCursor;
-        
+        size_t count = 0;
         while(1)
-        {                        
+        {               
                 EXEC SQL FETCH NEXT FROM MyCursor INTO SQL DESCRIPTOR myDescr;
-                
                 if (sqlca.sqlcode == ECPG_NOT_FOUND || strncmp(sqlca.sqlstate,"00",2)) break;
                 EXEC SQL GET DESCRIPTOR myDescr :colcount = COUNT;
+
+                if(count == 0) {
+                        for(index = 1; index <= colcount; index++) {
+                                EXEC SQL GET DESCRIPTOR myDescr VALUE :index :colName = NAME;
+                                std::cout.width(25);
+                                std::cout << colName << " ";
+                                std::cout.width(25);
+                        }
+                        std::cout << "\n-----------------------------------------------------------------------------------------------------------------------------------\n";
+                }
+                std::cout << std::endl;
+                
+                
                 for(index = 1; index <= colcount; index++) {
                         EXEC SQL GET DESCRIPTOR myDescr VALUE :index :str = DATA;
-                        EXEC SQL GET DESCRIPTOR myDescr VALUE :index :colName = NAME;
+                        std::cout.width(25);
                         std::cout << str << " ";
+                        std::cout.width(25);
                 }
                 std::cout << '\n';
+                ++count;
         }
         EXEC SQL DEALLOCATE DESCRIPTOR myDescr;
         EXEC SQL CLOSE MyCursor;
@@ -267,7 +281,7 @@ int menu()
                         {
                                 printf("_____________________\n");
                                 printf("1. show\n");
-                                ReadAllRecord(table.req_show());
+                                show_req(table.req_show());
                                 printf("_____________________\n");
                                 break;
                         }
@@ -275,7 +289,7 @@ int menu()
                         {
                                 printf("_____________________\n");
                                 printf("2. select values\n");
-                                ReadAllRecord(table.req_select());
+                                show_req(table.req_select());
                                 //SelectValues();
                                 printf("_____________________\n");
                                 break;
@@ -310,12 +324,12 @@ int menu()
                         /*
                         case '6':
                         {
-                               change_data_table();
+                               //change_data_table();
                                break;
                         }
                         case '7':
                         {       
-                                Dynamic_sql_select_1();
+                                //Dynamic_sql_select_1();
                                 break;
                         }
                          case '8':
